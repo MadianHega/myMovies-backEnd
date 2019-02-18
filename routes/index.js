@@ -1,5 +1,9 @@
 var express = require('express');
 var router = express.Router();
+// le module request permet à l'API de pouvoir request une autre API
+var request = require('request');
+// import les donnèes sensibles
+var login = require("../login.log");
 
 // return la date d'aujourd'hui au format anglophone
 var currentDate = function () {
@@ -19,6 +23,7 @@ router.get('/movieList', function(req, res, next) {
   request(`https://api.themoviedb.org/3/discover/movie?vote_count.lte.gte=5&release_date.lte=${newDate}&api_key=${login.keyMovieDatabase}&language=fr&region=fr`,
      function(error, response, body) {
        let brut = JSON.parse(body);
+       console.log(brut);
        let result = brut.results
        result.map((item) => {
          let movie = {}
