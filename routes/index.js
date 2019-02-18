@@ -2,8 +2,23 @@ var express = require('express');
 var router = express.Router();
 // le module request permet à l'API de pouvoir request une autre API
 var request = require('request');
+// mongoose fait le pont entre l'API et mlab
+var mongoose = require('mongoose');
+// option de connection à mlab
+var options = { connectTimeoutMS: 5000, useNewUrlParser: true };
 // import les donnèes sensibles
 var login = require("../login.log");
+
+// connexion à mlab
+mongoose.connect(`mongodb://${login.userMLab}:${login.userPasswordMlab}@ds139435.mlab.com:39435/mymovies`,
+    options,
+    function(err) {
+     console.log(err);
+    }
+);
+
+var userSchema = mongoose.Schema({ pseudo: String, email: String, password: String,});
+var userModel = mongoose.model('user', userSchema);
 
 // return la date d'aujourd'hui au format anglophone
 var currentDate = function () {
@@ -23,7 +38,6 @@ router.get('/movieList', function(req, res, next) {
   request(`https://api.themoviedb.org/3/discover/movie?vote_count.lte.gte=5&release_date.lte=${newDate}&api_key=${login.keyMovieDatabase}&language=fr&region=fr`,
      function(error, response, body) {
        let brut = JSON.parse(body);
-       console.log(brut);
        let result = brut.results
        result.map((item) => {
          let movie = {}
