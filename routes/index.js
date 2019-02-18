@@ -8,8 +8,10 @@ var mongoose = require('mongoose');
 var options = { connectTimeoutMS: 5000, useNewUrlParser: true };
 // import les donnèes sensibles
 var login = require("../login.log");
-// pour crypt les passwords
+// module crypter les passwords
 const bcrypt = require('bcrypt');
+// crypt les passwords
+var salt = login.salt;
 
 // connexion à mlab
 mongoose.connect(`mongodb://${login.userMLab}:${login.userPasswordMlab}@ds139435.mlab.com:39435/mymovies`,
@@ -50,6 +52,8 @@ const passwordIsValid = password => {
   return isValid;
 };
 
+
+
 /* GET movieList*/
 router.get('/movieList', function(req, res, next) {
   let movieList = []
@@ -70,7 +74,6 @@ router.get('/movieList', function(req, res, next) {
        res.json({ movieList: movieList});
   });
 });
-
 
 // GET likeMovieList
 router.get('/likeMovieList', function(req, res, next) {
@@ -103,6 +106,56 @@ router.get('/likeMovieList', function(req, res, next) {
       res.json({ movieList: response});
   })
 
+});
+
+// Inscription
+router.post('/signup', function(req, res, next) {
+  let isExist = false;
+  let readyToDb = false;
+  console.log(req.body);
+  if(!pseudoIsValid(req.body.pseudo)){
+    res.json({ pseudoValid: false});
+  }
+  else if(!passwordIsValid(req.body.password)){
+    res.json({ passwordValid: false});
+  }
+  else{
+    readyToDb = true
+  }
+
+  if (readyToDb) {
+    userModel.find(
+      { email: req.body.email } ,
+      function (err, users) {
+        if (users.length == 0) {
+          let hash = bcrypt.hashSync(req.body.password, salt);
+          var newUser = new userModel ({
+            pseudo: req.body.pseudo,
+            email: req.body.email,
+            password: hash,
+          });
+          newUser.save(
+            function(error, user) {
+              if (err){
+                res.json({
+                  signup : false,
+                  result : err
+                })
+              } else {
+                res.json({
+                  signup : true,
+                  result : user,
+                })
+              }
+          });
+        }
+        else if (users.length > 0){
+          isExist = true
+          res.json({ isExist });
+        }
+      }
+    )
+  }
 });
 
 module.exports = router;
