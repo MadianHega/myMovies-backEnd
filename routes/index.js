@@ -8,6 +8,8 @@ var mongoose = require('mongoose');
 var options = { connectTimeoutMS: 5000, useNewUrlParser: true };
 // import les donnèes sensibles
 var login = require("../login.log");
+// pour crypt les passwords
+const bcrypt = require('bcrypt');
 
 // connexion à mlab
 mongoose.connect(`mongodb://${login.userMLab}:${login.userPasswordMlab}@ds139435.mlab.com:39435/mymovies`,
@@ -29,6 +31,24 @@ var currentDate = function () {
   let date = year + "-" + month + "-" + day
   return date
 }
+
+// Vérifie que le pseudo comporte entre 3 et 20 caractéres
+const pseudoIsValid = pseudo => {
+  let isValid = false
+  if(pseudo.length >= 3 && pseudo.length <= 20){
+    isValid = true
+  }
+  return isValid;
+};
+
+// Vérifie que le password comporte entre 4 et 15 caractéres
+const passwordIsValid = password => {
+  let isValid = false
+  if(password.length >= 4 && password.length <= 15){
+    isValid = true
+  }
+  return isValid;
+};
 
 /* GET movieList*/
 router.get('/movieList', function(req, res, next) {
