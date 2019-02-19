@@ -21,7 +21,7 @@ mongoose.connect(`mongodb://${login.userMLab}:${login.userPasswordMlab}@ds139435
     }
 );
 
-var userSchema = mongoose.Schema({ pseudo: String, email: String, password: String,});
+var userSchema = mongoose.Schema({ userName: String, email: String, password: String,});
 var userModel = mongoose.model('user', userSchema);
 
 // return la date d'aujourd'hui au format anglophone
@@ -35,9 +35,9 @@ var currentDate = function () {
 }
 
 // Vérifie que le pseudo comporte entre 3 et 20 caractéres
-const pseudoIsValid = pseudo => {
+const userNameIsValid = userName => {
   let isValid = false
-  if(pseudo.length >= 3 && pseudo.length <= 20){
+  if(userName.length >= 3 && userName.length <= 20){
     isValid = true
   }
   return isValid;
@@ -121,14 +121,11 @@ router.post('/signup', function(req, res, next) {
   let isExist = false;
   let readyToDb = false;
   console.log(req.body);
-  if(!pseudoIsValid(req.body.pseudo)){
-    res.json({ pseudoValid: false});
+  if(!userNameIsValid(req.body.userName)){
+    res.json({ userNameValid: false});
   } else if(!passwordIsValid(req.body.password)){
       res.json({ passwordValid: false});
   } else if(!emailIsValid(req.body.email)){
-      let test = req.body.email
-      console.log(test.length);
-      console.log("ok test");
       res.json({ emailValid: false})
   } else{
     readyToDb = true
@@ -141,7 +138,7 @@ router.post('/signup', function(req, res, next) {
         if (users.length == 0) {
           let hash = bcrypt.hashSync(req.body.password, salt);
           var newUser = new userModel ({
-            pseudo: req.body.pseudo,
+            userName: req.body.userName,
             email: req.body.email,
             password: hash,
           });
