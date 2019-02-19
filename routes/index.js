@@ -52,6 +52,14 @@ const passwordIsValid = password => {
   return isValid;
 };
 
+const emailIsValid = email => {
+  let isValid = false
+  if(email.length >= 5 && email.length <= 40){
+    isValid = true
+  }
+  return isValid;
+}
+
 
 
 /* GET movieList*/
@@ -115,11 +123,14 @@ router.post('/signup', function(req, res, next) {
   console.log(req.body);
   if(!pseudoIsValid(req.body.pseudo)){
     res.json({ pseudoValid: false});
-  }
-  else if(!passwordIsValid(req.body.password)){
-    res.json({ passwordValid: false});
-  }
-  else{
+  } else if(!passwordIsValid(req.body.password)){
+      res.json({ passwordValid: false});
+  } else if(!emailIsValid(req.body.email)){
+      let test = req.body.email
+      console.log(test.length);
+      console.log("ok test");
+      res.json({ emailValid: false})
+  } else{
     readyToDb = true
   }
 
