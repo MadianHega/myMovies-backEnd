@@ -186,7 +186,7 @@ router.post('/signin', function(req, res, next) {
 // update userModel pour ajouter l'id du film like
 router.post('/like', function(req, res, next) {
   console.log(req.body);
-  let newLike = req.body.idMovie
+  let newLike = req.body.movieId
 
   userModel.updateOne(
     {_id: req.body.userId},
