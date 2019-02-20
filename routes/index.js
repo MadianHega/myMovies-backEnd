@@ -21,7 +21,7 @@ mongoose.connect(`mongodb://${login.userMLab}:${login.userPasswordMlab}@ds139435
     }
 );
 
-var userSchema = mongoose.Schema({ userName: String, email: String, password: String,});
+var userSchema = mongoose.Schema({ userName: String, email: String, password: String, likeMovie: String});
 var userModel = mongoose.model('user', userSchema);
 
 // return la date d'aujourd'hui au format anglophone
@@ -180,6 +180,24 @@ router.post('/signin', function(req, res, next) {
          res.json({ users });
        }
      }
+  )
+})
+
+// update userModel pour ajouter l'id du film like
+router.post('/like', function(req, res, next) {
+  console.log(req.body);
+  let newLike = req.body.idMovie
+
+  userModel.updateOne(
+    {_id: req.body.userId},
+    {$addToSet: {likeMovie: newLike}},
+    function (err, raw) {
+      if(err){
+        res.json({likeSucces : false})
+      } else{
+        res.json({likeSucces: true});
+      }
+    }
   )
 })
 
