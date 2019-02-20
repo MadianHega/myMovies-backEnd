@@ -166,4 +166,21 @@ router.post('/signup', function(req, res, next) {
   }
 });
 
+//Connexion
+router.post('/signin', function(req, res, next) {
+  var hash = bcrypt.hashSync(req.body.password, salt);
+  userModel.find(
+     {email: req.body.email, password: hash} ,
+     function (err, users) {
+       if(err){
+         res.json({ err });
+       }
+       else{
+         console.log(users);
+         res.json({ users });
+       }
+     }
+  )
+})
+
 module.exports = router;
