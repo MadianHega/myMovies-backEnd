@@ -195,10 +195,25 @@ router.post('/like', function(req, res, next) {
       if(err){
         res.json({likeSucces : false})
       } else{
-        res.json({likeSucces: true});
+        res.json({likeSucces: true})
       }
     }
   )
 })
+
+// update userModel pour retirer l'id du film dislike
+router.put('/dislike', function(req, res) {
+  userModel.updateOne(
+    {_id: req.body.userId},
+    {$pull: {likeMovie: req.body.movieId}},
+    function (err, raw) {
+      if(err){
+        res.json({dislikeSucces : false})
+      } else{
+        res.json({dislikeSucces: true})
+      }
+    }
+  )
+});
 
 module.exports = router;
